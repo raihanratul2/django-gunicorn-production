@@ -11,7 +11,9 @@ Update the server and install required packages.
 ```bash
 sudo apt update
 sudo apt upgrade -y
+```
 
+```bash
 sudo apt install python3 python3-venv python3-pip nginx git -y
 ```
 
@@ -30,9 +32,10 @@ Clone your repository.
 
 ```bash
 cd /var/www/
-
 git clone https://github.com/raihanratul2/REPOSITORY.git
-
+```
+enter directory
+```bash
 cd REPOSITORY
 ```
 
@@ -62,14 +65,14 @@ Edit `settings.py`.
 ALLOWED_HOSTS = ["yourdomain.com", "www.yourdomain.com", "SERVER_IP"]
 ```
 
-### Static Files
+### Static Files*
 
 ```python
 STATIC_URL = "/static/"
-STATIC_ROOT = BASE_DIR / "staticfiles"
+STATIC_ROOT = BASE_DIR / "static"
 ```
 
-### Media Files
+### Media Files*
 
 ```python
 MEDIA_URL = "/media/"
@@ -126,7 +129,7 @@ Example:
 
 ```
 [Unit]
-Description=Gunicorn daemon
+Description=Gunicorn daemon For project
 After=network.target
 
 [Service]
@@ -185,14 +188,14 @@ Example configuration:
 ```
 server {
     listen 80;
-    server_name yourdomain.com www.yourdomain.com;
+    server_name project.com www.project.com;
 
     location /static/ {
-        alias /home/ubuntu/project/staticfiles/;
+        alias /var/www/project/static/;
     }
 
     location /media/ {
-        alias /home/ubuntu/project/media/;
+        alias /var/www/project/media/;
     }
 
     location / {
@@ -243,7 +246,7 @@ sudo apt install certbot python3-certbot-nginx -y
 Run SSL setup.
 
 ```bash
-sudo certbot --nginx
+sudo certbot --nginx -d project.com
 ```
 
 Auto renewal test:
@@ -359,7 +362,7 @@ project/
 Restart services:
 
 ```bash
-sudo systemctl restart gunicorn
+sudo systemctl restart project
 sudo systemctl restart nginx
 ```
 
