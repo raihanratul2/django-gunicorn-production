@@ -59,6 +59,10 @@ pip install gunicorn
 
 Edit `settings.py`.
 
+```bash
+cd project/settings.py
+```
+
 ### Allowed Hosts
 
 ```python
@@ -135,18 +139,18 @@ After=network.target
 [Service]
 User=www-data
 Group=www-data
-WorkingDirectory=/var/www/project
+WorkingDirectory=/var/www/event2
 
-ExecStart=/var/www/project/env/bin/gunicorn \
-          --workers 3 \
-          --bind unix:/run/project/gunicorn.sock \
-          projectname.wsgi:application
+ExecStart=/var/www/event2/env/bin/gunicorn \
+    --workers 3 \
+    --bind unix:/run/event2/gunicorn.sock \
+event-management.wsgi:application
 
-RuntimeDirectory=project
+RuntimeDirectory=event2
 RuntimeDirectoryMode=0755
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=multi-user.target]
 ```
 
 Reload systemd.
@@ -254,6 +258,33 @@ Auto renewal test:
 ```bash
 sudo certbot renew --dry-run
 ```
+# Django Deployment: Folder Permissions Setup
+
+When deploying Django in production under `/var/www/`, proper permissions are required so that **Gunicorn** and **Nginx** (running as `www-data` user) can access project files.
+
+---
+
+## 1. Change Ownership
+
+```bash
+sudo chown -R www-data:www-data /var/www/project
+```
+## 2. Set General Permissions
+```bash
+sudo chmod -R 755 /var/www/project
+```
+Purpose: Grants read/execute permission to everyone, but write permission only to the owner (www-data).
+
+Why: Ensures files are accessible while keeping write access restricted.
+
+---
+3. Static & Media Folder Permissions
+
+```bash
+sudo chmod -R 775 /var/www/project/static
+sudo chmod -R 775 /var/www/project/media
+```
+
 
 ---
 
@@ -285,6 +316,8 @@ workers = 5
 --access-logfile -
 --error-logfile -
 ```
+
+
 
 ---
 
